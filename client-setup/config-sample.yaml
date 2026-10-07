@@ -1,0 +1,33 @@
+# Example LiveKit Client Configuration
+#
+# Client configurations allow dynamic or static matching of client attributes
+# (such as browser, OS, device model, SDK version, protocol version) to customize
+# client behavior and override room/server defaults.
+#
+# Rules are evaluated against client metadata (`c`) using Tengo expressions.
+
+- match: 'c.browser == "safari"'
+  configuration:
+    disabled_codecs:
+      codecs:
+        - mime: "video/av1"
+  merge: true
+
+- match: 'c.browser == "safari" && c.browser_version > "18.3"'
+  configuration:
+    disabled_codecs:
+      publish:
+        - mime: "video/vp9"
+  merge: true
+
+- match: '(c.device_model == "xiaomi 2201117ti" && c.os == "android") || ((c.browser == "firefox" || c.browser == "firefox mobile") && c.os == "android")'
+  configuration:
+    disabled_codecs:
+      publish:
+        - mime: "video/h264"
+  merge: false
+
+- match: 'c.protocol < 5'
+  configuration:
+    resume_connection: 1 # 0: UNSET, 1: DISABLED, 2: ENABLED
+  merge: true
